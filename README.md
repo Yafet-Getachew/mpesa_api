@@ -4,7 +4,7 @@
 ## Installation
 
 `pip install mpesa-api` or 
-`pip install -e git+https://github.com/lemaiyan/mpesa_api.git#egg=mpesa_api`
+`pip install -e git+https://github.com/otuoma/mpesa_api.git`
 
 
 ## Requirements 
