@@ -10,7 +10,7 @@
 ## Requirements 
 
 - Python 3.4+
-- Django 1.11.7+
+- Django 2.0+
 - Celery 4.1.0+
 - djangorestframework 3.7.3+
 - requests 2.18.4+
