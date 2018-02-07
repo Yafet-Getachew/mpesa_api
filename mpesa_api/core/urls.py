@@ -1,7 +1,6 @@
 from django.urls import path
 
-from mpesa_api.core.views import B2cResult, B2cTimeOut, C2bConfirmation, C2bValidation, \
-    OnlineCheckoutCallback
+from mpesa_api.core.views import B2cResult, B2cTimeOut, C2bConfirmation, C2bValidation, OnlineCheckoutCallback
 
 app_name = 'mpesa'   
 
