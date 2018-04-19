@@ -11,7 +11,7 @@ setup(
     url='https://github.com/lemaiyan/mpesa_api',
     download_url='https://github.com/lemaiyan/mpesa_api/archive/0.1.8.tar.gz',
     requires=[
-        'Django (>=1.11.7)',
+        'Django (>=1.8.18)',
         'djangorestframework (>=3.7.3)',
         'celery (>=4.1.0)',
         'requests (>=2.18.4)'

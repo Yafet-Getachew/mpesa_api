@@ -104,7 +104,7 @@ class B2CMethodsTest(TestCase):
         response = post(url, mocks.B2C_SUCCESSFUL_RESULT)
         self.assertEqual('{"value":"ok","key":"status","detail":"success"}', response)
 
-    @mock.patch('mpesa_api.core.signals.handle_b2c_request_post_save', autospec=True)
+    @mock.patch('mpesa_api.signals.handle_b2c_request_post_save', autospec=True)
     def test_b2c__post_save_signal(self, mock_signal, mock_post, mock_get):
         post_save.connect(mock_signal, sender=B2CRequest, dispatch_uid='test_b2c_request_post_save')
         Mpesa.b2c_request(phone=254708374149, amount=100.0)
@@ -150,7 +150,7 @@ class C2BMethodTest(TestCase):
         response = post(url, mocks.PAYBILL_RESPONSE)
         self.assertEqual('{"value":"ok","key":"status","detail":"success"}', response)
 
-    @mock.patch('mpesa_api.core.signals.handle_online_checkout_post_save', autospec=True)
+    @mock.patch('mpesa_api.signals.handle_online_checkout_post_save', autospec=True)
     def test_c2b_post_save_signal(self, mock_signal, mock_post, mock_get):
         post_save.connect(mock_signal, sender=OnlineCheckout, dispatch_uid='test_online_request_post_save')
         Mpesa.stk_push(phone=254708374149, amount=100.0, account_reference='Test')

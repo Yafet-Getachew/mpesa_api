@@ -18,5 +18,5 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^mpesa/', include('mpesa_api.core.urls', 'mpesa')),
+    url(r'^mpesa/', include('mpesa_api.urls', 'mpesa')),
 ]

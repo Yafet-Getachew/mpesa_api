@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'mpesa_api.core',
+    'mpesa_api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

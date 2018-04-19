@@ -135,7 +135,7 @@ make sure you make this file executable and run it to run the workers.
 Once you're done with the set up you need to be able to make calls to MPESA API's in your `.py` file
 where you want to make the calls add the following line
 ```python
-from mpesa_api.core.mpesa import Mpesa
+from mpesa_api.mpesa import Mpesa
 ```
 The `Mpesa` class containts static methods to intereact with the MPESA API's. They initiate the calls
 and also keeps track of the callbacks and the values are stored in the database for retrieval. 
