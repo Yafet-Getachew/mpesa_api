@@ -8,5 +8,5 @@ class CoreConfig(AppConfig):
     verbose_name = 'MPESA API CORE'
 
     def ready(self):
-        import mpesa_api.core.signals
+        import mpesa_api.signals
         pass
