@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 
-from mpesa_api.core.models import AuthToken
+from mpesa_api.models import AuthToken
 from mpesa_api.util.http import post
 
 

@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from celery import shared_task
 
-from mpesa_api.core.models import B2CRequest, C2BRequest, OnlineCheckout, \
+from mpesa_api.models import B2CRequest, C2BRequest, OnlineCheckout, \
     B2CResponse, OnlineCheckoutResponse
 from mpesa_api.util.c2butils import process_online_checkout
 from mpesa_api.util.b2cutils import send_b2c_request

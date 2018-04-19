@@ -3,16 +3,16 @@ import requests
 from unittest import mock
 from django.conf import settings
 from mpesa_api.util.mpesautils import get_token
-from mpesa_api.core.models import B2CRequest, OnlineCheckout
-from mpesa_api.core.mpesa import Mpesa
-from mpesa_api.core import tasks
+from mpesa_api.models import B2CRequest, OnlineCheckout
+from mpesa_api.mpesa import Mpesa
+from mpesa_api import tasks
 from mpesa_api.util import mocks
 from mpesa_api.util.b2cutils import send_b2c_request
 from mpesa_api.util.c2butils import register_c2b_url, process_online_checkout
 from django.urls import reverse
-from mpesa_api.core import signals
+from mpesa_api import signals
 from django.db.models.signals import post_save
-from mpesa_api.core.tasks import process_b2c_call_response_task, send_b2c_request_task, \
+from mpesa_api.tasks import process_b2c_call_response_task, send_b2c_request_task, \
     call_online_checkout_task, handle_online_checkout_response_task
 from celery import chain
 
