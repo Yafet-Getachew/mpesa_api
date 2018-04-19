@@ -31,7 +31,7 @@ class B2CRequest(models.Model):
     """
     Handles B2C requests
     """
-    id = CustomBigAutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     phone = models.BigIntegerField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     conversation_id = models.CharField(max_length=40, blank=True, null=True)
@@ -55,7 +55,7 @@ class B2CResponse(models.Model):
     """
     Handles B2C Response
     """
-    id = CustomBigAutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     phone = models.BigIntegerField(blank=True, null=True)
     amount = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     conversation_id = models.CharField(max_length=40, blank=True, null=True)
@@ -85,7 +85,7 @@ class C2BRequest(models.Model):
     """
     Handles C2B Requests
     """
-    id = CustomBigAutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     transaction_type = models.CharField(max_length=20, blank=True, null=True)
     transaction_id = models.CharField(max_length=20, unique=True)
     transaction_date = models.DateTimeField(blank=True, null=True)
@@ -120,7 +120,7 @@ class OnlineCheckout(models.Model):
     """
     Handles Online Checkout
     """
-    id = CustomBigAutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     phone = models.BigIntegerField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     checkout_request_id = models.CharField(max_length=50, default='')
@@ -144,7 +144,7 @@ class OnlineCheckoutResponse(models.Model):
     """
     Handles Online Checkout Response
     """
-    id = CustomBigAutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     merchant_request_id = models.CharField(max_length=50, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=50, default='')
     result_code = models.CharField(max_length=5, blank=True, null=True)
