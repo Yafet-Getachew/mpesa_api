@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rangefilter.filter import DateRangeFilter
+#from rangefilter.filter import DateRangeFilter
 from mpesa_api.models import B2CRequest, B2CResponse, C2BRequest, OnlineCheckout, OnlineCheckoutResponse
 
 
@@ -10,9 +10,9 @@ class B2CRequestAdmin(admin.ModelAdmin):
                        'response_code', 'response_description', 'request_id', 'error_code',
                        'error_message', 'date_added')
     search_fields = ('phone',)
-    list_filter = (
-        ('date_added', DateRangeFilter),
-    )
+    # list_filter = (
+    #     ('date_added', DateRangeFilter),
+    # )
 
 
 @admin.register(B2CResponse)
@@ -24,9 +24,9 @@ class B2CResponseAdmin(admin.ModelAdmin):
                        'utility_funds', 'paid_account_funds', 'transaction_date',
                        'mpesa_user_name', 'is_registered_customer')
     search_fields = ('phone', 'transaction_receipt', 'mpesa_user_name')
-    list_filter = (
-        ('transaction_date', DateRangeFilter),
-    )
+    # list_filter = (
+    #     ('transaction_date', DateRangeFilter),
+    # )
 
 
 @admin.register(C2BRequest)
@@ -37,10 +37,10 @@ class C2BRequestAdmin(admin.ModelAdmin):
                        'org_account_balance', 'third_party_trans_id', 'is_validated',
                        'is_completed', 'date_added')
     search_fields = ('phone', 'transaction_id', 'name')
-    list_filter = (
-        ('transaction_date', DateRangeFilter),
-        ('date_added', DateRangeFilter)
-    )
+    # list_filter = (
+    #     ('transaction_date', DateRangeFilter),
+    #     ('date_added', DateRangeFilter)
+    # )
 
 
 @admin.register(OnlineCheckout)
@@ -50,9 +50,9 @@ class OnlineCheckoutAdmin(admin.ModelAdmin):
                        'transaction_description', 'customer_message', 'merchant_request_id',
                        'response_code', 'response_description', 'date_added')
     search_fields = ('phone', 'amount', 'date_added')
-    list_filter = (
-        ('date_added', DateRangeFilter),
-    )
+    # list_filter = (
+    #     ('date_added', DateRangeFilter),
+    # )
 
 
 @admin.register(OnlineCheckoutResponse)
@@ -62,7 +62,7 @@ class OnlineCheckoutResponseAdmin(admin.ModelAdmin):
                        'result_description', 'result_code', 'checkout_request_id',
                        'merchant_request_id', 'date_added')
     search_fields = ('phone', 'amount', 'date_added', 'mpesa_receipt_number')
-    list_filter = (
-        ('transaction_date', DateRangeFilter),
-        ('date_added', DateRangeFilter)
-    )
+    # list_filter = (
+    #     ('transaction_date', DateRangeFilter),
+    #     ('date_added', DateRangeFilter)
+    # )
