@@ -6,6 +6,12 @@ from mpesa_api.tasks import process_b2c_result_response_task, \
     process_c2b_confirmation_task, process_c2b_validation_task, \
     handle_online_checkout_callback_task
 from mpesa_api.mpesa import Mpesa
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 class B2cTimeOut(APIView):
     """
@@ -101,10 +107,12 @@ class OnlineCheckoutCallback(APIView):
         )
         return Response(dict(value='ok', key='status', detail='success'))
 
+
 class Order(APIView):
     """
 
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     @csrf_exempt
     def post(self, request, format=None):
@@ -116,10 +124,10 @@ class Order(APIView):
         """
         data = request.data
 
-        phone, amount, account_reference  = data['phone'], data['amount'], data['account_reference']
-        return Response(dict(value='ok', key='status', detail='success'))  # TODO: change to return true dict
+        data['payment_status'] = 'Completed'
+        amount, account_reference = data['amount'], data['item_name']
 
-        if phone and amount and account_reference:
+        if amount and account_reference:
             Mpesa.b2c_request(254700000000, amount)  # starts a b2c payment
             Mpesa.c2b_register_url()  # registers the validate and confirmation url's for b2c
             # starts online checkout on given number
