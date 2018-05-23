@@ -10,6 +10,12 @@ from mpesa_api.util.c2butils import process_online_checkout
 from mpesa_api.util.b2cutils import send_b2c_request
 from celery.contrib import rdb
 import logging
+from django.conf import settings
+from mpesa_api.models import AuthToken
+from mpesa_api.util.http import post
+import base64
+import json
+from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -231,6 +237,44 @@ def handle_online_checkout_response_task(response, transaction_id):
         response_description=response.get('ResponseDescription', '')
     )
 
+
+def call_online_checkout_and_response(msisdn, amount, account_reference, transaction_desc, transaction_id):
+    """
+    Handle the online checkout
+    :param msisdn:
+    :param amount:
+    :param account_reference:
+    :param transaction_desc:
+    :return:
+    """
+    url = settings.C2B_ONLINE_CHECKOUT_URL
+    headers = {"Content-Type": 'application/json',
+               'Authorization': 'Bearer {}'.format(AuthToken.objects.get_token('c2b'))}
+    timestamp = str(datetime.now())[:-7].replace('-', '').replace(' ', '').replace(':', '')
+    password = base64.b64encode('{}{}{}'.format(settings.C2B_ONLINE_SHORT_CODE, settings.C2B_ONLINE_PASSKEY,
+                                                      timestamp)).decode('utf-8')
+    body = dict(
+        BusinessShortCode=settings.C2B_ONLINE_SHORT_CODE,
+        Password=password,
+        Timestamp=timestamp,
+        TransactionType=settings.C2B_TRANSACTION_TYPE,
+        Amount=str(amount),
+        PartyA=str(msisdn),
+        PartyB=settings.C2B_ONLINE_SHORT_CODE,
+        PhoneNumber=str(msisdn),
+        CallBackURL=settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL,
+        AccountReference=account_reference,
+        TransactionDesc=transaction_desc
+    )
+    response = post(url=url, headers=headers, data=json.dumps(body))
+    response = response.json()
+    OnlineCheckout.objects.filter(pk=transaction_id).update(
+        checkout_request_id=response.get('CheckoutRequestID', ''),
+        customer_message=response.get('CustomerMessage', ''),
+        merchant_request_id=response.get('MerchantRequestID', ''),
+        response_code=response.get('ResponseCode', ''),
+        response_description=response.get('ResponseDescription', '')
+    )
 
 @shared_task(name='handle_online_checkout_callback')
 def handle_online_checkout_callback_task(response):

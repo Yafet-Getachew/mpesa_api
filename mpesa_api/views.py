@@ -42,9 +42,9 @@ class B2cResult(APIView):
         :return:
         """
         data = request.data
-        process_b2c_result_response_task.apply_async(
-            args=(data,),
-            queue='b2c_result')
+        queue = 'edx.lms.core.high'
+        chain = process_b2c_result_response_task.s(data).set(queue=queue)
+        chain()
         return Response(dict(value='ok', key='status', detail='success'))
 
 
@@ -61,10 +61,9 @@ class C2bValidation(APIView):
         :return:
         """
         data = request.data
-        process_c2b_validation_task.apply_async(
-            args=(data,),
-            queue="c2b_validation"
-        )
+        queue = 'edx.lms.core.high'
+        chain = process_c2b_validation_task.s(data).set(queue=queue)
+        chain()
         return Response(dict(value='ok', key='status', detail='success'))
 
 
@@ -81,10 +80,9 @@ class C2bConfirmation(APIView):
         :return:
         """
         data = request.data
-        process_c2b_confirmation_task.apply_async(
-            args=(data,),
-            queue='c2b_confirmation'
-        )
+        queue = 'edx.lms.core.high'
+        chain = process_c2b_confirmation_task.s(data).set(queue=queue)
+        chain()
         return Response(dict(value='ok', key='status', detail='success'))
 
 
@@ -101,10 +99,9 @@ class OnlineCheckoutCallback(APIView):
         :return:
         """
         data = request.data
-        handle_online_checkout_callback_task.apply_async(
-            args=(data,),
-            queue='online_checkout_callback'
-        )
+        queue = 'edx.lms.core.high'
+        chain = handle_online_checkout_callback_task.s(data).set(queue=queue)
+        chain()
         return Response(dict(value='ok', key='status', detail='success'))
 
 

@@ -2,7 +2,7 @@ from mpesa_api.models import B2CRequest, OnlineCheckout
 from mpesa_api.util import exceptions, c2butils
 from decimal import Decimal
 import uuid
-
+from django.conf import settings
 
 class Mpesa:
     """
