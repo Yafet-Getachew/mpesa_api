@@ -238,7 +238,7 @@ def handle_online_checkout_response_task(response, transaction_id):
     )
 
 
-def call_online_checkout_and_response(msisdn, amount, account_reference, transaction_desc, transaction_id):
+def call_online_checkout_and_response(msisdn, amount, account_reference, transaction_desc, transaction_id, order_id):
     """
     Handle the online checkout
     :param msisdn:
@@ -262,7 +262,7 @@ def call_online_checkout_and_response(msisdn, amount, account_reference, transac
         PartyA=str(msisdn),
         PartyB=settings.C2B_ONLINE_SHORT_CODE,
         PhoneNumber=str(msisdn),
-        CallBackURL=settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL,
+        CallBackURL=settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL.format("order_id"),
         AccountReference=account_reference,
         TransactionDesc=transaction_desc
     )
@@ -277,7 +277,7 @@ def call_online_checkout_and_response(msisdn, amount, account_reference, transac
     )
 
 @shared_task(name='handle_online_checkout_callback')
-def handle_online_checkout_callback_task(response):
+def handle_online_checkout_callback_task(response, order_id):
     """
     Process the callback response
     :param response:
@@ -338,6 +338,7 @@ def handle_online_checkout_callback_task(response):
         update_data['result_description'] = data.get('ResultDesc', '')
         update_data['checkout_request_id'] = data.get('CheckoutRequestID', '')
         update_data['merchant_request_id'] = data.get('MerchantRequestID', '')
+        update_data['order_id'] = order_id
 
         meta_data = data.get('CallbackMetadata', {}).get('Item', {})
         if len(meta_data) > 0:

@@ -97,7 +97,7 @@ class OnlineCheckoutCallback(APIView):
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     @csrf_exempt
-    def post(self, request, format=None):
+    def post(self, request, order_id):
         """
         process the confirmation
         :param request:
@@ -106,7 +106,7 @@ class OnlineCheckoutCallback(APIView):
         """
         data = request.data
         queue = 'edx.lms.core.high'
-        chain = handle_online_checkout_callback_task.s(data).set(queue=queue)
+        chain = handle_online_checkout_callback_task.s(data, order_id).set(queue=queue)
         chain()
         return Response(dict(value='ok', key='status', detail='success'))
 
@@ -171,7 +171,7 @@ class MpesaPayment(APIView):
             Mpesa.b2c_request(254700000000, amount)  # starts a b2c payment
             Mpesa.c2b_register_url()  # registers the validate and confirmation url's for b2c
             # starts online checkout on given number
-            Mpesa.stk_push(254700000000, amount, account_reference=account_reference)
+            Mpesa.stk_push(254700000000, amount, account_reference=account_reference, orderId = custom)
             return Response(dict(value='ok', key='status', detail='success'))  # TODO: change to return true dict
         else:
             return Response(dict(value='fail', key='status', detail='fail'))  # TODO: change to return false dict

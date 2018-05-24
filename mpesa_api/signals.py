@@ -36,5 +36,5 @@ def handle_online_checkout_post_save(sender, instance, **Kwargs):
     # online checkout
     queue = "edx.lms.core.high"
     chain = call_online_checkout_and_response.s(instance.phone, int(instance.amount), instance.account_reference,
-                                      instance.transaction_description, instance.id).set(queue=queue)
+                                      instance.transaction_description, instance.id, order_id).set(queue=queue)
     chain()

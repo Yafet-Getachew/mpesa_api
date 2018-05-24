@@ -117,6 +117,7 @@ class OnlineCheckout(models.Model):
     response_code = models.CharField(max_length=5, blank=True, null=True)
     response_description = models.CharField(max_length=100, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
+    order_id = models.IntegerField()
 
     def __str__(self):
         return str(self.phone)
@@ -139,6 +140,7 @@ class OnlineCheckoutResponse(models.Model):
     phone = models.BigIntegerField(blank=True, null=True)
     amount = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
+    order_id = models.IntegerField()
 
     def __str__(self):
         return str(self.phone)
