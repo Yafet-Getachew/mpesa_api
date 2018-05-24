@@ -8,7 +8,8 @@ from mpesa_api.tasks import process_b2c_result_response_task, \
 from mpesa_api.mpesa import Mpesa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from edxmako.shortcuts import render_to_string
-
+from mpesa_api.models import B2CRequest, C2BRequest, OnlineCheckout, \
+    B2CResponse, OnlineCheckoutResponse
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 
     def enforce_csrf(self, request):
@@ -175,3 +176,26 @@ class MpesaPayment(APIView):
             return Response(dict(value='ok', key='status', detail='success'))  # TODO: change to return true dict
         else:
             return Response(dict(value='fail', key='status', detail='fail'))  # TODO: change to return false dict
+
+
+class CheckStatusOfPayment(APIView):
+    """
+
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        """
+        process the confirmation
+        :param request:
+        :param format:
+        :return:
+        """
+        data = request.data
+        order_id =  data['order_id']
+        response = OnlineCheckoutResponse.objects.get(order_id=order_id)
+        if response:
+            return Response(dict(value='ok' if response.result_code == 0  else 'fail' , key='1', detail=response.result_description))
+        else:
+            return Response(dict(value='in progress', key='0', detail='in progress'))
