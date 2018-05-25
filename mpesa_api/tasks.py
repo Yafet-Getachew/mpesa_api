@@ -6,7 +6,6 @@ from celery import shared_task
 
 from mpesa_api.models import B2CRequest, C2BRequest, OnlineCheckout, \
     B2CResponse, OnlineCheckoutResponse
-from mpesa_api.util.c2butils import process_online_checkout
 from mpesa_api.util.b2cutils import send_b2c_request
 from celery.contrib import rdb
 import logging
@@ -208,17 +207,17 @@ def process_c2b_confirmation_task(response):
         pass
 
 
-@shared_task(name='make_online_checkout_call')
-def call_online_checkout_task(phone, amount, account_reference, transaction_desc):
-    """
-    Handle online checkout request
-    :param phone:
-    :param amount:
-    :param transaction_ref:
-    :param transaction_desc:
-    :return:
-    """
-    return process_online_checkout(phone, amount, account_reference, transaction_desc)
+# @shared_task(name='make_online_checkout_call')
+# def call_online_checkout_task(phone, amount, account_reference, transaction_desc):
+#     """
+#     Handle online checkout request
+#     :param phone:
+#     :param amount:
+#     :param transaction_ref:
+#     :param transaction_desc:
+#     :return:
+#     """
+#     return process_online_checkout(phone, amount, account_reference, transaction_desc)
 
 
 @shared_task(name='handle_online_checkout_response')

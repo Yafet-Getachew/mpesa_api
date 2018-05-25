@@ -1,6 +1,6 @@
 from celery import chain
 from mpesa_api.tasks import send_b2c_request_task, process_b2c_call_response_task, \
-    call_online_checkout_task, handle_online_checkout_response_task, call_online_checkout_and_response
+     handle_online_checkout_response_task, call_online_checkout_and_response
 
 from django.dispatch import receiver
 from mpesa_api.models import B2CRequest, OnlineCheckout
