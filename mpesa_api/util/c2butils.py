@@ -6,6 +6,7 @@ from django.conf import settings
 
 from mpesa_api.models import AuthToken
 from mpesa_api.util.http import post
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
 def register_c2b_url():
@@ -13,14 +14,14 @@ def register_c2b_url():
     Register the c2b_url
     :return:
     """
-    url = settings.C2B_REGISTER_URL
+    url = configuration_helpers.get_value('C2B_REGISTER_URL', settings.C2B_REGISTER_URL)
     headers = {"Content-Type": 'application/json',
                'Authorization': 'Bearer {}'.format(AuthToken.objects.get_token('c2b'))}
     body = dict(
-        ShortCode=settings.C2B_SHORT_CODE,
-        ResponseType=settings.C2B_RESPONSE_TYPE,
-        ConfirmationURL=settings.C2B_CONFIRMATION_URL,
-        ValidationURL=settings.C2B_VALIDATE_URL
+        ShortCode=configuration_helpers.get_value('C2B_SHORT_CODE', settings.C2B_SHORT_CODE),
+        ResponseType= configuration_helpers.get_value('C2B_RESPONSE_TYPE', settings.C2B_RESPONSE_TYPE),
+        ConfirmationURL= configuration_helpers.get_value('C2B_CONFIRMATION_URL', settings.C2B_CONFIRMATION_URL),
+        ValidationURL= configuration_helpers.get_value('C2B_VALIDATE_URL', settings.C2B_VALIDATE_URL)
     )
     response = post(url=url, headers=headers, data=json.dumps(body))
     return response.json()

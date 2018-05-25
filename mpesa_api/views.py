@@ -6,10 +6,11 @@ from mpesa_api.tasks import process_b2c_result_response_task, \
     handle_online_checkout_callback_task
 from mpesa_api.mpesa import Mpesa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from edxmako.shortcuts import render_to_string
+from edxmako.shortcuts import render_to_string, render_to_response
 from mpesa_api.models import B2CRequest, C2BRequest, OnlineCheckout, \
     B2CResponse, OnlineCheckoutResponse
 from django.core.urlresolvers import reverse
+import requests
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 
@@ -128,7 +129,7 @@ class Order(APIView):
         :return:
         """
         data = request.data
-        return render_to_string('mpesa/mpesa_form.html', {
+        return render_to_response('mpesa/mpesa_form.html', {
             'action': '/mpesa/payment_request/',
             'params': {
                 'cmd': '_xclick',
@@ -165,12 +166,17 @@ class MpesaPayment(APIView):
 
         data['payment_status'] = 'Completed'
         amount, account_reference = data['amount'], data['item_name']
+        try:
+            response = OnlineCheckoutResponse.objects.get(order_id=data['custom'])
+            response.delete()
+        except:
+            pass
 
         if amount and account_reference:
-            Mpesa.b2c_request(254700000000, amount)  # starts a b2c payment
+            Mpesa.b2c_request(data['phone'], amount)  # starts a b2c payment
             Mpesa.c2b_register_url()  # registers the validate and confirmation url's for b2c
             # starts online checkout on given number
-            Mpesa.stk_push(254700000000, amount, account_reference=account_reference, orderId = custom)
+            Mpesa.stk_push(data['phone'], amount, account_reference=account_reference, orderId = custom)
             return Response(dict(value='ok', key='status', detail='success', check_url=reverse('check_payment_order')))  # TODO: change to return true dict
         else:
             return Response(dict(value='fail', key='status', detail='fail', check_url=""))  # TODO: change to return false dict
@@ -183,7 +189,7 @@ class CheckStatusOfPayment(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     @csrf_exempt
-    def post(self, request, format=None):
+    def post(self, request):
         """
         process the confirmation
         :param request:
@@ -192,8 +198,8 @@ class CheckStatusOfPayment(APIView):
         """
         data = request.data
         order_id =  data['order_id']
-        response = OnlineCheckoutResponse.objects.get(order_id=order_id)
-        if response:
-            return Response(dict(value='ok' if response.result_code == 0  else 'fail' , key='1', detail=response.result_description))
-        else:
+        try:
+            response = OnlineCheckoutResponse.objects.get(order_id=order_id)
+            return Response(dict(value='ok' if int(response.result_code) == 0  else 'fail' , key='1', detail=response.merchant_request_id))
+        except:
             return Response(dict(value='in progress', key='0', detail='in progress'))

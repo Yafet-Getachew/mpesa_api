@@ -15,6 +15,7 @@ from mpesa_api.util.http import post
 import base64
 import json
 from datetime import datetime
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 logger = logging.getLogger(__name__)
 
 
@@ -246,22 +247,27 @@ def call_online_checkout_and_response(msisdn, amount, account_reference, transac
     :param transaction_desc:
     :return:
     """
-    url = settings.C2B_ONLINE_CHECKOUT_URL
+
+    url = configuration_helpers.get_value('C2B_ONLINE_CHECKOUT_URL', settings.C2B_ONLINE_CHECKOUT_URL)
+    C2B_ONLINE_SHORT_CODE = configuration_helpers.get_value('C2B_ONLINE_SHORT_CODE', settings.C2B_ONLINE_SHORT_CODE)
+    C2B_ONLINE_PASSKEY = configuration_helpers.get_value('C2B_ONLINE_PASSKEY', settings.C2B_ONLINE_PASSKEY)
+    C2B_TRANSACTION_TYPE = configuration_helpers.get_value('C2B_TRANSACTION_TYPE', settings.C2B_TRANSACTION_TYPE)
+    C2B_ONLINE_CHECKOUT_CALLBACK_URL = configuration_helpers.get_value('C2B_ONLINE_CHECKOUT_CALLBACK_URL', settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL)
     headers = {"Content-Type": 'application/json',
                'Authorization': 'Bearer {}'.format(AuthToken.objects.get_token('c2b'))}
     timestamp = str(datetime.now())[:-7].replace('-', '').replace(' ', '').replace(':', '')
-    password = base64.b64encode('{}{}{}'.format(settings.C2B_ONLINE_SHORT_CODE, settings.C2B_ONLINE_PASSKEY,
+    password = base64.b64encode('{}{}{}'.format(C2B_ONLINE_SHORT_CODE, C2B_ONLINE_PASSKEY,
                                                       timestamp)).decode('utf-8')
     body = dict(
-        BusinessShortCode=settings.C2B_ONLINE_SHORT_CODE,
+        BusinessShortCode=C2B_ONLINE_SHORT_CODE,
         Password=password,
         Timestamp=timestamp,
-        TransactionType=settings.C2B_TRANSACTION_TYPE,
+        TransactionType=C2B_TRANSACTION_TYPE,
         Amount=str(amount),
         PartyA=str(msisdn),
-        PartyB=settings.C2B_ONLINE_SHORT_CODE,
+        PartyB=C2B_ONLINE_SHORT_CODE,
         PhoneNumber=str(msisdn),
-        CallBackURL=settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL.format("order_id"),
+        CallBackURL=C2B_ONLINE_CHECKOUT_CALLBACK_URL.format("order_id"),
         AccountReference=account_reference,
         TransactionDesc=transaction_desc
     )
@@ -362,3 +368,26 @@ def handle_online_checkout_callback_task(response, order_id):
     except Exception as ex:
         logger.error(ex)
         raise ValueError(str(ex))
+
+
+def check_paymet(order_id):
+    try:
+        response = OnlineCheckoutResponse.objects.get(order_id=order_id)
+        if int(response.result_code) == 0:
+            data = {
+                'custom': order_id,
+                'payment_status': "ok",
+                'txn_id': '23232'
+            }
+            return data
+        return {
+            'custom': order_id,
+            'payment_status': "false",
+            'txn_id': '23232'
+        }
+    except:
+        return {
+            'custom': order_id,
+            'payment_status': "false",
+            'txn_id': '23232'
+        }
