@@ -1,7 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from mpesa_api.tasks import process_b2c_result_response_task, \
     process_c2b_confirmation_task, process_c2b_validation_task, \
     handle_online_checkout_callback_task
@@ -10,6 +9,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from edxmako.shortcuts import render_to_string
 from mpesa_api.models import B2CRequest, C2BRequest, OnlineCheckout, \
     B2CResponse, OnlineCheckoutResponse
+from django.core.urlresolvers import reverse
+
 class CsrfExemptSessionAuthentication(SessionAuthentication):
 
     def enforce_csrf(self, request):
@@ -140,9 +141,6 @@ class Order(APIView):
                 'notify_url': data['notify_url'],
                 'cancel_return': data['cancel_return'],
                 'return': data['return'],
-            },
-            'fields': {
-                'phone' : data['phone'],
             }
         })
 
@@ -173,9 +171,9 @@ class MpesaPayment(APIView):
             Mpesa.c2b_register_url()  # registers the validate and confirmation url's for b2c
             # starts online checkout on given number
             Mpesa.stk_push(254700000000, amount, account_reference=account_reference, orderId = custom)
-            return Response(dict(value='ok', key='status', detail='success'))  # TODO: change to return true dict
+            return Response(dict(value='ok', key='status', detail='success', check_url=reverse('check_payment_order')))  # TODO: change to return true dict
         else:
-            return Response(dict(value='fail', key='status', detail='fail'))  # TODO: change to return false dict
+            return Response(dict(value='fail', key='status', detail='fail', check_url=""))  # TODO: change to return false dict
 
 
 class CheckStatusOfPayment(APIView):
