@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(name='b2c_call')
-def send_b2c_request_task(amount, phone, id):
+def send_b2c_request_task(amount, phone, id,url,
+                          B2C_INITIATOR_NAME, B2C_SECURITY_TOKEN, B2C_COMMAND_ID,
+                          B2C_SHORTCODE, B2C_QUEUE_TIMEOUT_URL, B2C_RESULT_URL, AuthToken):
     """
     task for send a b2c request
     :param amount:
@@ -28,7 +30,9 @@ def send_b2c_request_task(amount, phone, id):
     :param id:
     :return:
     """
-    return send_b2c_request(amount, phone, id)
+    return send_b2c_request(amount, phone, id, url,
+                            B2C_INITIATOR_NAME, B2C_SECURITY_TOKEN, B2C_COMMAND_ID,
+                            B2C_SHORTCODE, B2C_QUEUE_TIMEOUT_URL, B2C_RESULT_URL, AuthToken)
 
 
 @shared_task(name='handle_b2c_call_response')
@@ -238,7 +242,10 @@ def handle_online_checkout_response_task(response, transaction_id):
     )
 
 
-def call_online_checkout_and_response(msisdn, amount, account_reference, transaction_desc, transaction_id, order_id):
+def call_online_checkout_and_response(msisdn, amount, account_reference,
+                                      transaction_desc, transaction_id, order_id,
+                                      url, C2B_ONLINE_SHORT_CODE, C2B_ONLINE_PASSKEY, C2B_TRANSACTION_TYPE,
+                                      C2B_ONLINE_CHECKOUT_CALLBACK_URL, AuthToken):
     """
     Handle the online checkout
     :param msisdn:
@@ -248,13 +255,8 @@ def call_online_checkout_and_response(msisdn, amount, account_reference, transac
     :return:
     """
 
-    url = configuration_helpers.get_value('C2B_ONLINE_CHECKOUT_URL', settings.C2B_ONLINE_CHECKOUT_URL)
-    C2B_ONLINE_SHORT_CODE = configuration_helpers.get_value('C2B_ONLINE_SHORT_CODE', settings.C2B_ONLINE_SHORT_CODE)
-    C2B_ONLINE_PASSKEY = configuration_helpers.get_value('C2B_ONLINE_PASSKEY', settings.C2B_ONLINE_PASSKEY)
-    C2B_TRANSACTION_TYPE = configuration_helpers.get_value('C2B_TRANSACTION_TYPE', settings.C2B_TRANSACTION_TYPE)
-    C2B_ONLINE_CHECKOUT_CALLBACK_URL = configuration_helpers.get_value('C2B_ONLINE_CHECKOUT_CALLBACK_URL', settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL)
     headers = {"Content-Type": 'application/json',
-               'Authorization': 'Bearer {}'.format(AuthToken.objects.get_token('c2b'))}
+               'Authorization': 'Bearer {}'.format(AuthToken)}
     timestamp = str(datetime.now())[:-7].replace('-', '').replace(' ', '').replace(':', '')
     password = base64.b64encode('{}{}{}'.format(C2B_ONLINE_SHORT_CODE, C2B_ONLINE_PASSKEY,
                                                       timestamp)).decode('utf-8')
@@ -267,7 +269,7 @@ def call_online_checkout_and_response(msisdn, amount, account_reference, transac
         PartyA=str(msisdn),
         PartyB=C2B_ONLINE_SHORT_CODE,
         PhoneNumber=str(msisdn),
-        CallBackURL=C2B_ONLINE_CHECKOUT_CALLBACK_URL.format("order_id"),
+        CallBackURL=C2B_ONLINE_CHECKOUT_CALLBACK_URL.format(order_id),
         AccountReference=account_reference,
         TransactionDesc=transaction_desc
     )

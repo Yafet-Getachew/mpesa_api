@@ -52,6 +52,6 @@ class Mpesa:
                                                  amount=Decimal(str(amount)),
                                                  account_reference=account_reference,
                                                  transaction_description=uuid.uuid4().hex,
-                                                 order_id=orderID)
+                                                 order_id=orderId)
         except Exception as ex:
             raise exceptions.StkPushMpesaError(str(ex))

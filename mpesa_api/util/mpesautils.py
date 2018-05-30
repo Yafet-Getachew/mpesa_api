@@ -13,11 +13,11 @@ def get_token(type):
 
     url = configuration_helpers.get_value('GENERATE_TOKEN_URL', settings.GENERATE_TOKEN_URL)
     MPESA_C2B_ACCESS_KEY = configuration_helpers.get_value('MPESA_C2B_ACCESS_KEY', settings.MPESA_C2B_ACCESS_KEY)
-    MPESA_C2B_ACCESS_KEY = configuration_helpers.get_value('MPESA_C2B_ACCESS_KEY', settings.MPESA_C2B_ACCESS_KEY)
+    MPESA_C2B_CONSUMER_SECRET = configuration_helpers.get_value('MPESA_C2B_CONSUMER_SECRET', settings.MPESA_C2B_CONSUMER_SECRET)
     MPESA_B2C_ACCESS_KEY = configuration_helpers.get_value('MPESA_B2C_ACCESS_KEY', settings.MPESA_B2C_ACCESS_KEY)
     MPESA_B2C_CONSUMER_SECRET = configuration_helpers.get_value('MPESA_B2C_CONSUMER_SECRET',
                                                                 settings.MPESA_B2C_CONSUMER_SECRET)
-    concat_str = '{}:{}'.format(MPESA_C2B_ACCESS_KEY, MPESA_C2B_ACCESS_KEY)
+    concat_str = '{}:{}'.format(MPESA_C2B_ACCESS_KEY, MPESA_C2B_CONSUMER_SECRET)
     auth_token = encode_str_to_base_64(concat_str)
     if type.lower() == 'b2c':
         concat_str = '{}:{}'.format(MPESA_B2C_ACCESS_KEY, MPESA_B2C_CONSUMER_SECRET)
@@ -28,6 +28,7 @@ def get_token(type):
 
 
 def encode_str_to_base_64(str_to_encode):
+
     """
     Encodes the a given string to base64
     :param str_to_encode: str to encode
