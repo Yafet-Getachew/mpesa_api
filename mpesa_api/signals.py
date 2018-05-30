@@ -1,6 +1,6 @@
 from celery import chain
 from mpesa_api.tasks import send_b2c_request_task, process_b2c_call_response_task, \
-     handle_online_checkout_response_task, call_online_checkout_and_response
+     handle_online_checkout_response_task, call_online_checkout_and_response_task
 
 from django.dispatch import receiver
 from mpesa_api.models import B2CRequest, OnlineCheckout
@@ -54,7 +54,7 @@ def handle_online_checkout_post_save(sender, instance, **Kwargs):
     C2B_ONLINE_CHECKOUT_CALLBACK_URL = configuration_helpers.get_value('C2B_ONLINE_CHECKOUT_CALLBACK_URL',
                                                                        settings.C2B_ONLINE_CHECKOUT_CALLBACK_URL)
     AuthToken_Var = AuthToken.objects.get_token('c2b')
-    chain = call_online_checkout_and_response.s(instance.phone, int(instance.amount), instance.account_reference,
+    chain = call_online_checkout_and_response_task.s(instance.phone, int(instance.amount), instance.account_reference,
                                                 instance.transaction_description, instance.id, instance.order_id,
                                                 url, C2B_ONLINE_SHORT_CODE, C2B_ONLINE_PASSKEY,
                                                 C2B_TRANSACTION_TYPE, C2B_ONLINE_CHECKOUT_CALLBACK_URL,

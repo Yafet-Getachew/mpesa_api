@@ -241,8 +241,8 @@ def handle_online_checkout_response_task(response, transaction_id):
         response_description=response.get('ResponseDescription', '')
     )
 
-
-def call_online_checkout_and_response(msisdn, amount, account_reference,
+@shared_task(name='call_online_checkout_and_response')
+def call_online_checkout_and_response_task(msisdn, amount, account_reference,
                                       transaction_desc, transaction_id, order_id,
                                       url, C2B_ONLINE_SHORT_CODE, C2B_ONLINE_PASSKEY, C2B_TRANSACTION_TYPE,
                                       C2B_ONLINE_CHECKOUT_CALLBACK_URL, AuthToken):
