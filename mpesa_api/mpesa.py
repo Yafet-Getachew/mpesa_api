@@ -51,7 +51,7 @@ class Mpesa:
             return OnlineCheckout.objects.create(phone=int(phone),
                                                  amount=Decimal(str(amount)),
                                                  account_reference=account_reference,
-                                                 transaction_description=uuid.uuid4().hex,
+                                                 transaction_description="Payment",
                                                  order_id=orderId)
         except Exception as ex:
             raise exceptions.StkPushMpesaError(str(ex))
