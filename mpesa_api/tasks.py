@@ -53,7 +53,6 @@ def process_b2c_call_response_task(response, id):
         response_code=data.get('ResponseCode', ''),
         response_description=data.get('ResponseDescription', '')
     )
-    rdb.set_trace()
 
 
 @shared_task(name='handle_b2c_result_response')
