@@ -171,12 +171,12 @@ class MpesaPayment(APIView):
             response.delete()
         except:
             pass
-
+        phone = ''.join(x for x in data['phone'] if x.isdigit())
         if amount and account_reference:
-            Mpesa.b2c_request(data['phone'], amount)  # starts a b2c payment
+            Mpesa.b2c_request(phone, amount)  # starts a b2c payment
             Mpesa.c2b_register_url()  # registers the validate and confirmation url's for b2c
             # starts online checkout on given number
-            Mpesa.stk_push(data['phone'], amount, account_reference=account_reference, orderId = data['custom'])
+            Mpesa.stk_push(phone, amount, account_reference=account_reference, orderId = data['custom'])
             return Response(dict(value='ok', key='status', detail='success', check_url=reverse('check_payment_order')))  # TODO: change to return true dict
         else:
             return Response(dict(value='fail', key='status', detail='fail', check_url=""))  # TODO: change to return false dict
